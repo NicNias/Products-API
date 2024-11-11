@@ -1,11 +1,15 @@
 package com.example.demo.services;
 
 import com.example.demo.dtos.ProductDto;
+import com.example.demo.exception.products.ProductsNotFoundException;
 import com.example.demo.mappers.ProductMapper;
 import com.example.demo.entity.ProductEntity;
 import com.example.demo.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,9 +19,17 @@ public class ProductService {
 
     public ProductDto createProduct(ProductDto productDto){
         productRepository.findByName(productDto.name()).ifPresent(productEntity -> {
-            throw new RuntimeException("Produto ja existe");
+            throw new ProductsNotFoundException("Produto ja existe", HttpStatus.CONFLICT.value());
         });
         ProductEntity productEntity = productRepository.save(productMapper.toModel(productDto));
         return productMapper.toDTO(productEntity);
+    }
+
+    public List<ProductDto> findAll() {
+        List<ProductEntity> products = productRepository.findAll();
+        if(products.isEmpty()) {
+            throw new ProductsNotFoundException("Nenhum Produto cadastrado no momento", HttpStatus.CONFLICT.value());
+        }
+        return productMapper.listProductDto(products);
     }
 }
