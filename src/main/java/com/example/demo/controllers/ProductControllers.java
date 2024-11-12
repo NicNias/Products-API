@@ -29,4 +29,9 @@ public class ProductControllers {
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
     }
+
+    @GetMapping("/product/{name}")
+    public ResponseEntity<List<ProductDto>> getProducts(@PathVariable(value = "name") String name) {
+        return ResponseEntity.ok(productService.findByName(name));
+    }
 }

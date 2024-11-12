@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +32,17 @@ public class ProductService {
             throw new ProductsNotFoundException("Nenhum Produto cadastrado no momento", HttpStatus.CONFLICT.value());
         }
         return productMapper.listProductDto(products);
+    }
+
+    public List<ProductDto> findByName(String name) {
+        List<ProductEntity> products = productRepository.findByNameContainingIgnoreCase(name);
+
+        if (products.isEmpty()) {
+            throw new ProductsNotFoundException("Nenhum Produto encontrado", HttpStatus.NOT_FOUND.value());
+        }
+
+        return products.stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
