@@ -36,13 +36,18 @@ public class ProductService {
 
     public List<ProductDto> findByName(String name) {
         List<ProductEntity> products = productRepository.findByNameContainingIgnoreCase(name);
-
         if (products.isEmpty()) {
             throw new ProductsNotFoundException("Nenhum Produto encontrado", HttpStatus.NOT_FOUND.value());
         }
-
         return products.stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteProduct(String name) {
+        productRepository.findByName(name).orElseThrow(() -> {
+            throw new ProductsNotFoundException("Produto não foi encontrado", HttpStatus.NOT_FOUND.value());
+        });
+        productRepository.deleteByName(name);
     }
 }

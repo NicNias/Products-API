@@ -34,4 +34,10 @@ public class ProductControllers {
     public ResponseEntity<List<ProductDto>> getProducts(@PathVariable(value = "name") String name) {
         return ResponseEntity.ok(productService.findByName(name));
     }
+
+    @DeleteMapping("/product/{name}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable(value = "name") String name) {
+        productService.deleteProduct(name);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
