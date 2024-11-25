@@ -44,6 +44,15 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public ProductDto updateProduct(String name, ProductDto productDto) {
+        ProductEntity productEntity = productRepository.findByName(name).orElseThrow(() -> {
+            throw new ProductsNotFoundException("Produto não foi encontrado", HttpStatus.NOT_FOUND.value());
+        });
+        productMapper.updateEntityFromDto(productDto, productEntity);
+        ProductEntity updatedEntity = productRepository.save(productEntity);
+        return productMapper.toDTO(updatedEntity);
+    }
+
     public void deleteProduct(String name) {
         productRepository.findByName(name).orElseThrow(() -> {
             throw new ProductsNotFoundException("Produto não foi encontrado", HttpStatus.NOT_FOUND.value());
